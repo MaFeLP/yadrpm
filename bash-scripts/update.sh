@@ -69,30 +69,41 @@ else
   fi
 fi
 
+# Download discords Game SDK
 if [[ $DEBUG == true ]];then
-  if bash ./bash-scripts/update-sdk.sh --debug;then
-    if bash ./bash-scripts/make.sh --debug;then
-      echo -e "$FINISHED Update done!$RESET"
-      exit 0
+  if bash ./bash-scripts/update-sdk.sh --debug --no-delete-sources;then
+    if bash ./bash-scripts/update-sdk-sources.sh --debug;then
+      if bash ./bash-scripts/make.sh --debug;then
+        echo -e "$FINISHED Update done!$RESET"
+        exit 0
+      else
+        echo -e "$ERROR Something went wrong, in the making process!"
+        exit 1
+      fi
     else
-      echo -e "$ERROR Something went wrong, in the making process!"
+      echo -e "$ERROR Something went wrong, in the game-sdk-sources-updating process!"
       exit 1
     fi
   else
-    echo -e "$ERROR Something went wrong, in the game SDK updateing process!"
+    echo -e "$ERROR Something went wrong, in the game SDK updating process!"
     exit 1
   fi
 else
-  if bash ./bash-scripts/update-sdk.sh --no-debug;then
-    if bash ./bash-scripts/make.sh --no-debug;then
-      echo -e "$FINISHED Update done!"
-      exit 0
+  if bash ./bash-scripts/update-sdk.sh --no-debug --no-delete-sources;then
+    if bash ./bash-scripts/update-sdk-sources.sh --no-debug;then
+      if bash ./bash-scripts/make.sh --no-debug;then
+        echo -e "$FINISHED Update done!"
+        exit 0
+      else
+        echo -e "$ERROR Something went wrong, in the making process!"
+        exit 1
+      fi
     else
-      echo -e "$ERROR Something went wrong, in the making process!"
+      echo -e "$ERROR Something went wrong, in the game-sdk-sources-updating process!"
       exit 1
     fi
   else
-    echo -e "$ERROR Something went wrong, in the game SDK updateing process!"
+    echo -e "$ERROR Something went wrong, in the game SDK updating process!"
     exit 1
   fi
 fi
