@@ -9,7 +9,7 @@
 #include <thread>
 #include <vector>
 
-#include "discord.h"
+#include "discord/discord.h"
 
 #if defined(_WIN32)
 #pragma pack(push, 1)
