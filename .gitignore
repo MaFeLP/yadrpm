@@ -33,3 +33,6 @@
 
 # CLion working directory
 .idea/
+
+# CMake output directory
+cmake-build-debug/
