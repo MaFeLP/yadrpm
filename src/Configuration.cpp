@@ -20,6 +20,11 @@ Configuration Configuration::loadFromFile(const std::string& configFilePath) {
     } catch (std::exception& exception) {
         std::cerr << exception.what();
     }
+    try {
+        out.colorEnabled = std::stol(configMap["color"]);
+    } catch (std::exception& exception) {
+        std::cerr << exception.what();
+    }
 
     return out;
 }

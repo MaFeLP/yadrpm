@@ -67,7 +67,25 @@ int main(const int argc, const char** argv) {
         if (current == "--help") {
             cout << "";
             return 0;
-        }
+        } else
+        if (current.substr(0, 8) == string{"--color="}) {
+            string colorBuilder{};
+            bool isStart = true;
+            for (char &item : current) {
+                if (isStart && item == '=')
+                    isStart = false;
+                else if (!isStart)
+                    colorBuilder.push_back(item);
+            }
+            if (colorBuilder == string{"true"}) {
+                globalConfiguration.colorEnabled = true;
+            } else if (colorBuilder == string{"false"}) {
+                globalConfiguration.colorEnabled = false;
+            } else {
+                cerr << "Unrecognised argument for --color=: " << colorBuilder << "!\n";
+                return 1;
+            }
+        } else
         if (current.substr(0, 9) == string{"--config="}) {
             string configBuilder{};
             bool isStart = true;
@@ -79,7 +97,7 @@ int main(const int argc, const char** argv) {
             }
 
             globalConfiguration = Configuration::loadFromFile(configBuilder);
-        }
+        } else
         if (current.substr(0, 12) == string{"--client-id="}) {
             string idBuilder{};
             bool isStart = true;
@@ -101,7 +119,7 @@ int main(const int argc, const char** argv) {
     DiscordState state{};
 
     discord::Core* core{};
-    auto result = discord::Core::Create(310270644849737729, DiscordCreateFlags_Default, &core);
+    auto result = discord::Core::Create(globalConfiguration.clientID, DiscordCreateFlags_Default, &core);
     state.core.reset(core);
     if (!state.core) {
         std::cout << "Failed to instantiate discord core! (err " << static_cast<int>(result)
