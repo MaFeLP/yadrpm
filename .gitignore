@@ -30,6 +30,7 @@
 *.exe
 *.out
 *.app
+yadrpm
 
 # CLion working directory
 .idea/
