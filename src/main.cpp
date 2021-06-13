@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "discord/discord.h"
+#include "Configuration.hpp"
 
 #if defined(_WIN32)
 #pragma pack(push, 1)
@@ -41,6 +42,10 @@ struct BitmapFileHeader {
 #pragma pack(pop)
 #endif
 
+using std::string;
+using std::cout;
+using std::cerr;
+
 struct DiscordState {
     discord::User currentUser;
 
@@ -51,8 +56,48 @@ namespace {
 volatile bool interrupted{false};
 }
 
-int main(int, char**)
-{
+int main(const int argc, const char** argv) {
+    cout << "Starting Discord Game SDK...";
+    Configuration globalConfiguration {};
+
+    for (int itemIndex = 0; itemIndex <= argc; ++itemIndex) {
+        if (argv[itemIndex] == nullptr)
+            break;
+        string current = argv[itemIndex];
+        if (current == "--help") {
+            cout << "";
+            return 0;
+        }
+        if (current.substr(0, 9) == string{"--config="}) {
+            string configBuilder{};
+            bool isStart = true;
+            for (char &item : current) {
+                if (isStart && item == '=')
+                    isStart = false;
+                else if (!isStart)
+                    configBuilder.push_back(item);
+            }
+
+            globalConfiguration = Configuration::loadFromFile(configBuilder);
+        }
+        if (current.substr(0, 12) == string{"--client-id="}) {
+            string idBuilder{};
+            bool isStart = true;
+            for (char &item : current) {
+                if (isStart && item == '=')
+                    isStart = false;
+                else if (!isStart)
+                    idBuilder.push_back(item);
+            }
+            try {
+                globalConfiguration.clientID = std::stol(idBuilder);
+            } catch (std::invalid_argument &e) {
+                cerr << "Bad Client ID: " << idBuilder << " !\n";
+                return 1;
+            }
+        }
+    }
+
     DiscordState state{};
 
     discord::Core* core{};

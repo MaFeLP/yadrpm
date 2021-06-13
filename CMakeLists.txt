@@ -9,6 +9,8 @@ link_directories(yadrpm ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src)
 
 add_executable(yadrpm
         ${DISCORD_SOURCES}
+        src/Configuration.cpp
+        src/Configuration.hpp
         src/main.cpp)
 
 target_link_libraries(yadrpm discord_game_sdk)
