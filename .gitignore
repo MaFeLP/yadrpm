@@ -37,3 +37,6 @@ yadrpm
 
 # CMake output directory
 cmake-build-debug/
+
+# Discord's game SDK
+src/discord

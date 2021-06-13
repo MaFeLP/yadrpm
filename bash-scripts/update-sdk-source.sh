@@ -44,63 +44,59 @@ else
   fi
 fi
 
-# Checks, if the sources should be deleted after update
-DELETE_SOURCES=true
-if [[ $2 ]];then
-  if [[ $2 == "--no-delete-sources" ]];then
-    DELETE_SOURCES=true
-  fi
-fi
-
 # Download discords Game SDK
 echo -e "$START Downloading discord's game sdk with curl...$RESET"
-if [[ $DEBUG == true ]];then
-  if curl --request GET \
-       --url 'https://dl-game-sdk.discordapp.net/2.5.6/discord_game_sdk.zip'\
-       --output './discord_game_sdk.zip';then
-    echo -e "$FINISHED Downloaded discord's game sdk successfully!$RESET"
-  else
-    echo -e "$ERROR Could not download discord's game sdk. curl exited with error code $?$RESET"
-    echo -e "$ERROR Possible fixes:
-     - Check your internet connection
-     \`-> Check with 'ping google.com'
-     - Do you have curl's latest version installed?
-     \`-> Check with 'curl --version'$RESET"
-    exit 1
-  fi
+if [[ -f "./discord_game_sdk.zip" ]];then
+  echo -e "$FINISHED Found already downloaded source files! Using them...$RESET"
 else
-  if curl --request GET -sL \
-       --url "https://dl-game-sdk.discordapp.net/${SDK_VERSION}/discord_game_sdk.zip"\
-       --output './discord_game_sdk.zip';then
-    echo -e "$FINISHED Downloaded discord's game sdk successfully!$RESET"
-  else
-    echo -e "$ERROR Could not download discord's game sdk. curl exited with error code $?$RESET"
-    echo -e "$ERROR Possible fixes:
+  if [[ $DEBUG == true ]];then
+    if curl --request GET \
+         --url 'https://dl-game-sdk.discordapp.net/2.5.6/discord_game_sdk.zip'\
+         --output './discord_game_sdk.zip';then
+      echo -e "$FINISHED Downloaded discord's game sdk successfully!$RESET"
+    else
+      echo -e "$ERROR Could not download discord's game sdk. curl exited with error code $?$RESET"
+      echo -e "$ERROR Possible fixes:
      - Check your internet connection
      \`-> Check with 'ping google.com'
      - Do you have curl's latest version installed?
      \`-> Check with 'curl --version'$RESET"
-    exit 1
+      exit 1
+    fi
+  else
+    if curl --request GET -sL \
+         --url "https://dl-game-sdk.discordapp.net/${SDK_VERSION}/discord_game_sdk.zip"\
+         --output './discord_game_sdk.zip';then
+      echo -e "$FINISHED Downloaded discord's game sdk successfully!$RESET"
+    else
+      echo -e "$ERROR Could not download discord's game sdk. curl exited with error code $?$RESET"
+      echo -e "$ERROR Possible fixes:
+     - Check your internet connection
+     \`-> Check with 'ping google.com'
+     - Do you have curl's latest version installed?
+     \`-> Check with 'curl --version'$RESET"
+      exit 1
+    fi
   fi
 fi
 
 # Unpack the needed library...
 echo -e "$START Unpacking the required library with unzip...$RESET"
 if [[ $DEBUG == true ]];then
-  if unzip './discord_game_sdk.zip' 'lib/x86_64/discord_game_sdk.so';then
-    echo -e "$FINISHED Unpacked the library successfully!$RESET"
+  if unzip './discord_game_sdk.zip' 'cpp/*.cpp' 'cpp/*.h';then
+    echo -e "$FINISHED Unpacked the source files successfully!$RESET"
   else
-    echo -e "$ERROR Could not unpack the library!$RESET"
+    echo -e "$ERROR Could not unpack the source files!$RESET"
     echo -e "$ERROR Possible fixes:
      - Do you have unzip's latest version installed?
      \`-> Check with 'unzip -v'$RESET"
     exit 1
   fi
 else
-  if unzip './discord_game_sdk.zip' 'lib/x86_64/discord_game_sdk.so' &> /dev/null;then
-    echo -e "$FINISHED Unpacked the library successfully!$RESET"
+  if unzip './discord_game_sdk.zip' 'cpp/*.cpp' 'cpp/*.h' &> /dev/null;then
+    echo -e "$FINISHED Unpacked the source files successfully!$RESET"
   else
-    echo -e "$ERROR Could not unpack the library!$RESET"
+    echo -e "$ERROR Could not unpack the source files!$RESET"
     echo -e "$ERROR Possible fixes:
      - Do you have unzip's latest version installed?
      \`-> Check with 'unzip -v'$RESET"
@@ -108,10 +104,10 @@ else
   fi
 fi
 
-# Remove older copies of the SDK
-if [[ -f "./libdiscord_game_sdk.so" ]];then
+# Remove older copies of the SDK source files
+if [[ -d "./src/discord" ]];then
   echo -e "$START Removing older version of the game SDK..."
-  if rm "./libdiscord_game_sdk.so";then
+  if rm -rf "./src/discord";then
     echo -e "$FINISHED Removed older version of the game SDK!"
   else
     echo -e "$ERROR Could not remove older version of the SDK. Please do this manually!"
@@ -121,25 +117,14 @@ else
 fi
 
 # Move the library into the correct place
-if ! mv './lib/x86_64/discord_game_sdk.so' './libdiscord_game_sdk.so';then
-  echo -e "$ERROR Could not move the unpacked library to the needed place. Please do so manually!$RESET"
+if ! mv './cpp/' './src/discord/';then
+  echo -e "$ERROR Could not move the unpacked source files to the needed place. Please do so manually!$RESET"
   exit 1
 fi
 
 # Delete the files
-if [[ $DELETE_SOURCES == true ]];then
-  if rm -r './lib' './discord_game_sdk.zip';then
-    echo -e "$FINISHED Moved the library successfully!$RESET"
-  else
-    echo -e "$ERROR Could not remove the remaining, empty folders. Leaving them behind...$RESET"
-  fi
+if rm -r './discord_game_sdk.zip';then
+  echo -e "$FINISHED Moved the source files successfully!$RESET"
 else
-  if rm -r './lib';then
-    echo -e "$FINISHED Moved the library successfully!$RESET"
-  else
-    echo -e "$ERROR Could not remove the remaining, empty folders. Leaving them behind...$RESET"
-  fi
+  echo -e "$ERROR Could not remove the remaining, empty folders. Leaving them behind...$RESET"
 fi
-
-echo -e "$FINISHED Successfully updated the game SDK!"
-exit 0
