@@ -128,3 +128,18 @@ if rm -r './discord_game_sdk.zip';then
 else
   echo -e "$ERROR Could not remove the remaining, empty folders. Leaving them behind...$RESET"
 fi
+
+# Patching wrong configured files
+if [[ $DEBUG == true ]];then
+  if patch ./src/discord/types.h ./patches/src/discord/types.h.patch;then
+    echo -e "$FINISHED Applied patch to src/discord/types.h"
+  else
+    echo -e "$ERROR Could not apply patch for file src/discord/types.h! path exited with exit code $RESET$?"
+  fi
+else
+  if patch ./src/discord/types.h ./patches/src/discord/types.h.patch &> /dev/null;then
+    echo -e "$FINISHED Applied patch to types.h"
+  else
+    echo -e "$ERROR Could not apply patch for file src/discord/types.h! path exited with exit code $RESET$?"
+  fi
+fi
