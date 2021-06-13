@@ -66,11 +66,3 @@ std::map<std::string, std::string> Configuration::loadInformationFromFile(const 
 
     return configMap;
 }
-
-std::map<std::string, std::string> Configuration::defaultConfigMap() {
-    std::map<string, string> out{};
-
-    out.insert(std::make_pair(string{"clientID"}, string{"0"}));
-
-    return out;
-}

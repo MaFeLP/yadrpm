@@ -14,7 +14,6 @@ struct Configuration {
 
 
 private:
-    static std::map<std::string, std::string> defaultConfigMap();
     static std::map<std::string, std::string> loadInformationFromFile(const std::string &configFilePath);
 };
 
