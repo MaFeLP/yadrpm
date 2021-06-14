@@ -1,9 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <array>
-#include <cassert>
 #include <csignal>
-#include <cstdio>
 #include <cstdlib>
 #include <iostream>
 #include <thread>
@@ -258,18 +256,24 @@ int main(const int argc, const char** argv) {
       });
 
     discord::Activity activity{};
-    activity.SetDetails("Fruit Tarts");
-    activity.SetState("Pop Snacks");
-    activity.GetAssets().SetSmallImage("the");
-    activity.GetAssets().SetSmallText("i mage");
-    activity.GetAssets().SetLargeImage("the");
-    activity.GetAssets().SetLargeText("u mage");
-    activity.SetType(discord::ActivityType::Playing);
-    state.core->ActivityManager().UpdateActivity(activity, [](discord::Result result) {
-        std::cout << ((result == discord::Result::Ok) ? "Succeeded" : "Failed")
-                  << " updating activity!\n";
-    });
+    activity.SetName(globalConfiguration.presence.name.c_str());
+    activity.SetDetails(globalConfiguration.presence.details.c_str()); // first line
+    activity.SetState(globalConfiguration.presence.state.c_str()); // second line
+    if (globalConfiguration.presence.smallImage.enabled) {
+        activity.GetAssets().SetSmallImage(globalConfiguration.presence.smallImage.image.c_str());
+        activity.GetAssets().SetSmallText(globalConfiguration.presence.smallImage.text.c_str());
+    }
+    if (globalConfiguration.presence.bigImage.enabled) {
+        activity.GetAssets().SetLargeImage(globalConfiguration.presence.bigImage.image.c_str());
+        activity.GetAssets().SetLargeText(globalConfiguration.presence.bigImage.text.c_str());
+    }
+    if (globalConfiguration.presence.timestamp.enabled) {
+        activity.GetTimestamps().SetStart(discord::Timestamp{globalConfiguration.presence.timestamp.startTimestamp});
+        activity.GetTimestamps().SetEnd(discord::Timestamp{});
+    }
+    activity.SetType(globalConfiguration.presence.activityType);
 
+    /*
     discord::LobbyTransaction lobby{};
     state.core->LobbyManager().GetLobbyCreateTransaction(&lobby);
     lobby.SetCapacity(2);
@@ -312,7 +316,9 @@ int main(const int argc, const char** argv) {
               }
           });
       });
+    */
 
+    /*
     state.core->RelationshipManager().OnRefresh.Connect([&]() {
         std::cout << "Relationships refreshed!\n";
 
@@ -347,14 +353,43 @@ int main(const int argc, const char** argv) {
           std::cout << "Relationship with " << relationship.GetUser().GetUsername()
                     << " updated!\n";
       });
+    */
 
     std::signal(SIGINT, [](int) { interrupted = true; });
+    std::signal(SIGTERM, [](int) { interrupted = true; });
 
     do {
         state.core->RunCallbacks();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+        if (globalConfiguration.presence.timestamp.enabled) {
+            globalConfiguration.presence.timestamp.updateTimestamp();
+            activity.GetTimestamps().SetStart(discord::Timestamp{globalConfiguration.presence.timestamp.startTimestamp});
+        }
+
+        cout
+                << "Start Timestamp:" << globalConfiguration.presence.timestamp.startTimestamp << "; "
+                << "Current Timestamp:" << globalConfiguration.presence.timestamp.currentTimestamp << "; Diff: "
+                << globalConfiguration.presence.timestamp.currentTimestamp - globalConfiguration.presence.timestamp.startTimestamp
+                << "\n"
+                << "Start Timestamp: " << activity.GetTimestamps().GetStart() << "; "
+                << "Current Timestamp: " << activity.GetTimestamps().GetEnd() << "; "
+                << "Difference: " << activity.GetTimestamps().GetEnd() - activity.GetTimestamps().GetStart()
+                << "\n";
+
+        state.core->ActivityManager().UpdateActivity(activity, [](discord::Result result) {
+            if (result != discord::Result::Ok)
+                cerr << "Failed updating the activity!\n";
+        });
+
+        //std::this_thread::sleep_for(std::chrono::milliseconds(16));
+        std::this_thread::sleep_for(std::chrono::seconds (1));
     } while (!interrupted);
+
+    cout << "Thanks for using yadrpm!\n"
+         << "Ran for "
+         << globalConfiguration.presence.timestamp.updateTimestamp() - globalConfiguration.presence.timestamp.startTimestamp
+         << " seconds!"
+         << "\n";
 
     return 0;
 }
