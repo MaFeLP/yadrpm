@@ -1,6 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <array>
 #include <csignal>
 #include <cstdlib>
 #include <iostream>
@@ -55,8 +54,7 @@ volatile bool interrupted{false};
 }
 
 int main(const int argc, const char** argv) {
-    cout << "Starting Discord Game SDK...";
-    Configuration globalConfiguration {};
+    Configuration globalConfiguration{};
 
     for (int itemIndex = 0; itemIndex <= argc; ++itemIndex) {
         if (argv[itemIndex] == nullptr)
@@ -65,8 +63,7 @@ int main(const int argc, const char** argv) {
         if (current == "--help") {
             cout << "";
             return 0;
-        } else
-        if (current.substr(0, 8) == string{"--color="}) {
+        } else if (current.substr(0, 8) == string{"--color="}) {
             string colorBuilder{};
             bool isStart = true;
             for (char &item : current) {
@@ -83,8 +80,7 @@ int main(const int argc, const char** argv) {
                 cerr << "Unrecognised argument for --color=: " << colorBuilder << "!\n";
                 return 1;
             }
-        } else
-        if (current.substr(0, 9) == string{"--config="}) {
+        } else if (current.substr(0, 9) == string{"--config="}) {
             string configBuilder{};
             bool isStart = true;
             for (char &item : current) {
@@ -95,8 +91,7 @@ int main(const int argc, const char** argv) {
             }
 
             globalConfiguration = Configuration::loadFromFile(configBuilder);
-        } else
-        if (current.substr(0, 12) == string{"--client-id="}) {
+        } else if (current.substr(0, 12) == string{"--client-id="}) {
             string idBuilder{};
             bool isStart = true;
             for (char &item : current) {
@@ -114,22 +109,46 @@ int main(const int argc, const char** argv) {
         }
     }
 
+    cout << "Initialising the discord game SDK...\n"
+         << "If you get an error and this program exits, maybe check if discord is started!\n";
     DiscordState state{};
-
     discord::Core* core{};
     auto result = discord::Core::Create(globalConfiguration.clientID, DiscordCreateFlags_Default, &core);
     state.core.reset(core);
     if (!state.core) {
-        std::cout << "Failed to instantiate discord core! (err " << static_cast<int>(result)
+        std::cerr << "Failed to instantiate discord core! (err " << static_cast<int>(result)
                   << ")\n";
         std::exit(-1);
     }
+
+    cout << "Initialisation sequence done!\n"
+         << "If the app crashes from now on, it has a different origin!";
 
     state.core->SetLogHook(
       discord::LogLevel::Debug, [](discord::LogLevel level, const char* message) {
           std::cerr << "Log(" << static_cast<uint32_t>(level) << "): " << message << "\n";
       });
 
+    discord::Activity activity{};
+    activity.SetName(globalConfiguration.presence.name.c_str());
+    activity.SetDetails(globalConfiguration.presence.details.c_str()); // first line
+    activity.SetState(globalConfiguration.presence.state.c_str()); // second line
+    if (globalConfiguration.presence.smallImage.enabled) {
+        activity.GetAssets().SetSmallImage(globalConfiguration.presence.smallImage.image.c_str());
+        activity.GetAssets().SetSmallText(globalConfiguration.presence.smallImage.text.c_str());
+    }
+    if (globalConfiguration.presence.bigImage.enabled) {
+        activity.GetAssets().SetLargeImage(globalConfiguration.presence.bigImage.image.c_str());
+        activity.GetAssets().SetLargeText(globalConfiguration.presence.bigImage.text.c_str());
+    }
+    if (globalConfiguration.presence.timestamp.enabled) {
+        activity.GetTimestamps().SetStart(discord::Timestamp{globalConfiguration.presence.timestamp.startTimestamp});
+        activity.GetTimestamps().SetEnd(discord::Timestamp{});
+    }
+    activity.SetType(globalConfiguration.presence.activityType);
+
+    // User Manager
+    /*
     core->UserManager().OnCurrentUserUpdate.Connect([&state]() {
         state.core->UserManager().GetCurrentUser(&state.currentUser);
 
@@ -196,6 +215,10 @@ int main(const int argc, const char** argv) {
           });
     });
 
+    */
+
+    // Activity Manager
+    /*
     state.core->ActivityManager().RegisterCommand("run/command/foo/bar/baz/here.exe");
     state.core->ActivityManager().RegisterSteam(123123321);
 
@@ -210,7 +233,10 @@ int main(const int argc, const char** argv) {
       [](discord::ActivityActionType, discord::User const& user, discord::Activity const&) {
           std::cout << "Invite " << user.GetUsername() << "\n";
       });
+    */
 
+    // Lobby Manager
+    /*
     state.core->LobbyManager().OnLobbyUpdate.Connect(
       [](std::int64_t lobbyId) { std::cout << "Lobby update " << lobbyId << "\n"; });
 
@@ -254,25 +280,9 @@ int main(const int argc, const char** argv) {
       [&](std::int64_t, std::int64_t userId, bool speaking) {
           std::cout << "User " << userId << " is " << (speaking ? "" : "NOT ") << "speaking.\n";
       });
+    */
 
-    discord::Activity activity{};
-    activity.SetName(globalConfiguration.presence.name.c_str());
-    activity.SetDetails(globalConfiguration.presence.details.c_str()); // first line
-    activity.SetState(globalConfiguration.presence.state.c_str()); // second line
-    if (globalConfiguration.presence.smallImage.enabled) {
-        activity.GetAssets().SetSmallImage(globalConfiguration.presence.smallImage.image.c_str());
-        activity.GetAssets().SetSmallText(globalConfiguration.presence.smallImage.text.c_str());
-    }
-    if (globalConfiguration.presence.bigImage.enabled) {
-        activity.GetAssets().SetLargeImage(globalConfiguration.presence.bigImage.image.c_str());
-        activity.GetAssets().SetLargeText(globalConfiguration.presence.bigImage.text.c_str());
-    }
-    if (globalConfiguration.presence.timestamp.enabled) {
-        activity.GetTimestamps().SetStart(discord::Timestamp{globalConfiguration.presence.timestamp.startTimestamp});
-        activity.GetTimestamps().SetEnd(discord::Timestamp{});
-    }
-    activity.SetType(globalConfiguration.presence.activityType);
-
+    // Lobby Transaction Manager
     /*
     discord::LobbyTransaction lobby{};
     state.core->LobbyManager().GetLobbyCreateTransaction(&lobby);
@@ -318,6 +328,7 @@ int main(const int argc, const char** argv) {
       });
     */
 
+    // Relationship Manager
     /*
     state.core->RelationshipManager().OnRefresh.Connect([&]() {
         std::cout << "Relationships refreshed!\n";
@@ -361,28 +372,12 @@ int main(const int argc, const char** argv) {
     do {
         state.core->RunCallbacks();
 
-        if (globalConfiguration.presence.timestamp.enabled) {
-            globalConfiguration.presence.timestamp.updateTimestamp();
-            activity.GetTimestamps().SetStart(discord::Timestamp{globalConfiguration.presence.timestamp.startTimestamp});
-        }
-
-        cout
-                << "Start Timestamp:" << globalConfiguration.presence.timestamp.startTimestamp << "; "
-                << "Current Timestamp:" << globalConfiguration.presence.timestamp.currentTimestamp << "; Diff: "
-                << globalConfiguration.presence.timestamp.currentTimestamp - globalConfiguration.presence.timestamp.startTimestamp
-                << "\n"
-                << "Start Timestamp: " << activity.GetTimestamps().GetStart() << "; "
-                << "Current Timestamp: " << activity.GetTimestamps().GetEnd() << "; "
-                << "Difference: " << activity.GetTimestamps().GetEnd() - activity.GetTimestamps().GetStart()
-                << "\n";
-
         state.core->ActivityManager().UpdateActivity(activity, [](discord::Result result) {
             if (result != discord::Result::Ok)
                 cerr << "Failed updating the activity!\n";
         });
 
-        //std::this_thread::sleep_for(std::chrono::milliseconds(16));
-        std::this_thread::sleep_for(std::chrono::seconds (1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
     } while (!interrupted);
 
     cout << "Thanks for using yadrpm!\n"
