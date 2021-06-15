@@ -17,9 +17,11 @@ Configuration Configuration::loadFromFile(const std::string& configFilePath) {
     auto configMap = loadInformationFromFile(configFilePath);
 
     try {
-        out.colorEnabled = std::stol(configMap["color"]);
+        out.colorEnabled = configMap["color"] == string{"true"};
         out.clientID = std::stol(configMap["clientID"]);
         out.presence.name = configMap["presence.name"];
+        out.presence.details = configMap["presence.details"];
+        out.presence.state = configMap["presence.state"];
         out.presence.activityType = Presence::getActivityType(configMap["presence.type"]);
         try {
             out.presence.bigImage.enabled = configMap["presence.bigImage.enabled"] == string{"true"};
