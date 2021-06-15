@@ -2,9 +2,11 @@
 // Created by max on 15.06.21.
 //
 
+#include <iostream>
 #include "Activity.hpp"
+#include "../discord/discord.h"
 
-Tasks::Activity::Activity(Configuration* configuration) : _configuration(configuration) {
+Tasks::Activity::Activity(Configuration* configuration, discord::Core* core) : _configuration(configuration), _core(core) {
     _activity.SetName(_configuration->presence.name.c_str());
     _activity.SetDetails(_configuration->presence.details.c_str()); // first line
     _activity.SetState(_configuration->presence.state.c_str()); // second line
@@ -27,4 +29,9 @@ Tasks::Activity::Activity(Configuration* configuration) : _configuration(configu
         _activity.GetSecrets().SetSpectate(_configuration->presence.button2.link.c_str());
     }
     _activity.SetType(_configuration->presence.activityType);
+
+    _core->ActivityManager().UpdateActivity(_activity, [](discord::Result result) {
+        if (result != discord::Result::Ok)
+            std::cerr << "Failed updating the activity!\n";
+    });
 }

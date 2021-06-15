@@ -9,11 +9,12 @@
 
 namespace Tasks {
     struct Activity {
-        discord::Activity _activity{};
+        Activity(Configuration *configuration, discord::Core *core);
 
-        explicit Activity(Configuration *);
+        discord::Activity _activity{};
     private:
         Configuration * _configuration;
+        discord::Core * _core;
     };
 }
 

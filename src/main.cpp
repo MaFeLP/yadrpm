@@ -131,7 +131,7 @@ int main(const int argc, const char** argv) {
       });
 
     // Create the activity
-    Tasks::Activity activity{&globalConfiguration};
+    Tasks::Activity activity{&globalConfiguration, core};
 
     // Activity Manager
     Tasks::ActivityManager activityManager{core};
@@ -153,11 +153,6 @@ int main(const int argc, const char** argv) {
 
     do {
         state.core->RunCallbacks();
-
-        state.core->ActivityManager().UpdateActivity(activity._activity, [](discord::Result result) {
-            if (result != discord::Result::Ok)
-                cerr << "Failed updating the activity!\n";
-        });
 
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     } while (!interrupted);
