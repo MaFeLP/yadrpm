@@ -145,7 +145,16 @@ int main(const int argc, const char** argv) {
         activity.GetTimestamps().SetStart(discord::Timestamp{globalConfiguration.presence.timestamp.startTimestamp});
         activity.GetTimestamps().SetEnd(discord::Timestamp{});
     }
+    if (globalConfiguration.presence.button1.enabled) {
+        activity.GetSecrets().SetJoin(globalConfiguration.presence.button1.link.c_str());
+    }
+    if (globalConfiguration.presence.button2.enabled) {
+        activity.GetSecrets().SetSpectate(globalConfiguration.presence.button2.link.c_str());
+    }
     activity.SetType(globalConfiguration.presence.activityType);
+
+    //state.core->ActivityManager().RegisterCommand("");
+    //state.core->ActivityManager().RegisterSteam(123123321);
 
     // User Manager
     /*
@@ -214,24 +223,27 @@ int main(const int argc, const char** argv) {
               }
           });
     });
-
     */
 
     // Activity Manager
     /*
-    state.core->ActivityManager().RegisterCommand("run/command/foo/bar/baz/here.exe");
-    state.core->ActivityManager().RegisterSteam(123123321);
-
     state.core->ActivityManager().OnActivityJoin.Connect(
       [](const char* secret) { std::cout << "Join " << secret << "\n"; });
     state.core->ActivityManager().OnActivitySpectate.Connect(
-      [](const char* secret) { std::cout << "Spectate " << secret << "\n"; });
-    state.core->ActivityManager().OnActivityJoinRequest.Connect([](discord::User const& user) {
+      [](const char* secret) {
+          std::cout << "Spectate " << secret << "\n";
+          return discord::ActivityJoinRequestReply::Yes;
+    });
+    state.core->ActivityManager().OnActivityJoinRequest.Connect([&](discord::User const& user) {
         std::cout << "Join Request " << user.GetUsername() << "\n";
+        state.core->ActivityManager().SendRequestReply(user.GetId(), discord::ActivityJoinRequestReply::Yes, [&](discord::Result){
+            cout << "`-> User joined: " << user.GetUsername() << "\n";
+        });
     });
     state.core->ActivityManager().OnActivityInvite.Connect(
       [](discord::ActivityActionType, discord::User const& user, discord::Activity const&) {
           std::cout << "Invite " << user.GetUsername() << "\n";
+          return 0;
       });
     */
 
