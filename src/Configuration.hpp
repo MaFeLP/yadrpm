@@ -51,7 +51,6 @@ struct Configuration {
     static Configuration loadFromFile(const std::string&);
     Presence presence{};
 
-    std::ostream& operator<<(std::ostream &) const;
 private:
     static std::map<std::string, std::string> loadInformationFromFile(const std::string &configFilePath);
 };

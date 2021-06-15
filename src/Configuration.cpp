@@ -9,8 +9,6 @@
 #include <map>
 #include <chrono>
 
-#include "Colors.hpp"
-
 using std::string;
 
 Configuration Configuration::loadFromFile(const std::string& configFilePath) {
@@ -101,19 +99,6 @@ std::map<std::string, std::string> Configuration::loadInformationFromFile(const 
         configFile.close();
 
     return configMap;
-}
-
-std::ostream &Configuration::operator<<(std::ostream & ostream) const {
-    using namespace Colors;
-
-    if (colorEnabled)
-        return ostream
-               << ""
-        ;
-    else
-        return ostream
-               << ""
-        ;
 }
 
 discord::ActivityType Presence::getActivityType(string& activityType) {

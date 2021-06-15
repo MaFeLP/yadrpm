@@ -9,6 +9,7 @@
 #include "discord/discord.h"
 #include "discordTasks/tasks.hpp"
 #include "Configuration.hpp"
+#include "Colors.hpp"
 
 #if defined(_WIN32)
 #pragma pack(push, 1)
@@ -52,6 +53,34 @@ struct DiscordState {
 
 namespace {
 volatile bool interrupted{false};
+}
+
+std::ostream& operator<<(std::ostream& ostream, const Configuration& configuration) {
+    using namespace Colors;
+
+    if (configuration.colorEnabled)
+        return ostream
+                << Resets::ALL << Effects::BOLD << TextColors::GREEN
+                << "   ** Program Configuration **   \n"
+                << "+-------------------------------+\n"
+                << Resets::ALL
+
+                << Effects::UNDERLINED << TextColors::CYAN << " Client ID"
+                << Resets::ALL << TextColors::CYAN << ":\t"
+                << Resets::ALL << TextColors::LIGHT_GRAY << configuration.clientID << "\n"
+
+                << TextColors::CYAN << " Name"
+                << Resets::ALL << TextColors::CYAN << ":\t\t"
+                << Resets::ALL << TextColors::LIGHT_GRAY << configuration.presence.name << "\n"
+                << Resets::ALL
+                << TextColors::GREEN << "+-------------------------------+\n"
+                << Resets::ALL
+                ;
+    else
+        return ostream
+                << "   ** Configuration **   \n"
+                << "+-----------------------+\n"
+                ;
 }
 
 int main(const int argc, const char** argv) {
@@ -112,6 +141,7 @@ int main(const int argc, const char** argv) {
 
     cout << "Initialising the discord game SDK...\n"
          << "If you get an error and this program exits, maybe check if discord is started!\n";
+    cout << globalConfiguration;
     DiscordState state{};
     discord::Core* core{};
     auto result = discord::Core::Create(globalConfiguration.clientID, DiscordCreateFlags_Default, &core);
