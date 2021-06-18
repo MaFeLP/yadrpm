@@ -58,29 +58,249 @@ volatile bool interrupted{false};
 std::ostream& operator<<(std::ostream& ostream, const Configuration& configuration) {
     using namespace Colors;
 
-    if (configuration.colorEnabled)
-        return ostream
+    if (configuration.colorEnabled) {
+        ostream
                 << Resets::ALL << Effects::BOLD << TextColors::GREEN
-                << "   ** Program Configuration **   \n"
-                << "+-------------------------------+\n"
+                << "        ** Configuration **        \n"
+                << "+---------------------------------+\n"
                 << Resets::ALL
 
                 << Effects::UNDERLINED << TextColors::CYAN << " Client ID"
-                << Resets::ALL << TextColors::CYAN << ":\t"
+                << Resets::ALL << TextColors::CYAN << ":\t\t"
                 << Resets::ALL << TextColors::LIGHT_GRAY << configuration.clientID << "\n"
 
-                << TextColors::CYAN << " Name"
+                << Effects::UNDERLINED << TextColors::CYAN << " Config File"
+                << Resets::ALL << TextColors::CYAN << ":\t\t"
+                << Resets::ALL << TextColors::LIGHT_GRAY << configuration.configFile << "\n"
+
+                << Effects::UNDERLINED << TextColors::CYAN << " Colors"
+                << Resets::ALL << TextColors::CYAN << ":\t\t"
+                << Resets::ALL << TextColors::LIGHT_GRAY << (configuration.colorEnabled ? "yes" : "no") << "\n"
+
+                << Effects::UNDERLINED << TextColors::CYAN << " Presence\n"
+                << " |-> Name"
                 << Resets::ALL << TextColors::CYAN << ":\t\t"
                 << Resets::ALL << TextColors::LIGHT_GRAY << configuration.presence.name << "\n"
-                << Resets::ALL
-                << TextColors::GREEN << "+-------------------------------+\n"
-                << Resets::ALL
+
+                << TextColors::CYAN << " |-> Type"
+                << Resets::ALL << TextColors::CYAN << ":\t\t"
+                << Resets::ALL << TextColors::LIGHT_GRAY;
+        switch (configuration.presence.activityType) {
+            case discord::ActivityType::Playing:
+                ostream << "Playing\n";
+                break;
+            case discord::ActivityType::Listening:
+                ostream << "Listening\n";
+                break;
+            case discord::ActivityType::Streaming:
+                ostream << "Streaming\n";
+                break;
+            case discord::ActivityType::Watching:
+                ostream << "Watching\n";
+                break;
+        }
+        ostream
+                << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " |-> State"
+                << Resets::ALL << TextColors::CYAN << ":\t\t"
+                << Resets::ALL << TextColors::LIGHT_GRAY << configuration.presence.state << "\n"
+
+                << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " |-> Details"
+                << Resets::ALL << TextColors::CYAN << ":\t\t"
+                << Resets::ALL << TextColors::LIGHT_GRAY << configuration.presence.details << "\n"
                 ;
-    else
+
+        if (configuration.presence.bigImage.enabled) {
+            ostream
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " |-> Big Image"
+                    << Resets::ALL << TextColors::CYAN << ":\t\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << "yes" << "\n"
+
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " | |-> Text"
+                    << Resets::ALL << TextColors::CYAN << ":\t\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << configuration.presence.bigImage.text << "\n"
+
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " | `-> Image name"
+                    << Resets::ALL << TextColors::CYAN << ":\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << configuration.presence.bigImage.image << "\n"
+                    ;
+        } else {
+            ostream
+                << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " |-> Big Image"
+                << Resets::ALL << TextColors::CYAN << ":\t"
+                << Resets::ALL << TextColors::LIGHT_GRAY << "no" << "\n";
+        }
+
+        if (configuration.presence.smallImage.enabled) {
+            ostream
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " |-> Small Image"
+                    << Resets::ALL << TextColors::CYAN << ":\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << "yes" << "\n"
+
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " | |-> Text"
+                    << Resets::ALL << TextColors::CYAN << ":\t\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << configuration.presence.smallImage.text << "\n"
+
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " | `-> Image name"
+                    << Resets::ALL << TextColors::CYAN << ":\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << configuration.presence.smallImage.image << "\n"
+                    ;
+        } else {
+            ostream
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " |-> Small Image"
+                    << Resets::ALL << TextColors::CYAN << ":\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << "no" << "\n";
+        }
+
+        if (configuration.presence.button1.enabled) {
+            ostream
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " |-> Button 1"
+                    << Resets::ALL << TextColors::CYAN << ":\t\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << "yes" << "\n"
+
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " | |-> Text"
+                    << Resets::ALL << TextColors::CYAN << ":\t\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << configuration.presence.button1.text << "\n"
+
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " | `-> Link"
+                    << Resets::ALL << TextColors::CYAN << ":\t\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << configuration.presence.button1.link << "\n"
+                    ;
+        } else {
+            ostream
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " |-> Button 1"
+                    << Resets::ALL << TextColors::CYAN << ":\t\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << "no" << "\n";
+        }
+
+        if (configuration.presence.button2.enabled) {
+            ostream
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " |-> Button 2"
+                    << Resets::ALL << TextColors::CYAN << ":\t\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << "yes" << "\n"
+
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " | |-> Text"
+                    << Resets::ALL << TextColors::CYAN << ":\t\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << configuration.presence.button2.text << "\n"
+
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " | `-> Link"
+                    << Resets::ALL << TextColors::CYAN << ":\t\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << configuration.presence.button2.link << "\n"
+                    ;
+        } else {
+            ostream
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " |-> Button 2"
+                    << Resets::ALL << TextColors::CYAN << ":\t\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << "no" << "\n";
+        }
+
+        if (configuration.presence.timestamp.enabled) {
+            ostream
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " `-> Timestamp"
+                    << Resets::ALL << TextColors::CYAN << ":\t\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << "yes" << "\n"
+
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << "   |-> Start"
+                    << Resets::ALL << TextColors::CYAN << ":\t\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << configuration.presence.timestamp.startTimestamp << "\n"
+
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << "   `-> End"
+                    << Resets::ALL << TextColors::CYAN << ":\t\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << configuration.presence.timestamp.currentTimestamp << "\n"
+                    ;
+        } else {
+            ostream
+                    << Resets::ALL << Effects::UNDERLINED << TextColors::CYAN << " `-> Timestamp"
+                    << Resets::ALL << TextColors::CYAN << ":\t\t"
+                    << Resets::ALL << TextColors::LIGHT_GRAY << "no" << "\n";
+        }
+
         return ostream
-                << "   ** Configuration **   \n"
-                << "+-----------------------+\n"
+                << Resets::ALL
+                << TextColors::GREEN << "+---------------------------------+\n"
+                << Resets::ALL;
+    }
+    else {
+        ostream
+                << "        ** Configuration **        \n"
+                << "+---------------------------------+\n"
+                << " Client ID" << ":\t\t" << configuration.clientID << "\n"
+                << " Config File" << ":\t\t" << configuration.configFile << "\n"
+                << " Colors" << ":\t\t" << (configuration.colorEnabled ? "yes" : "no") << "\n"
+                << " Presence\n"
+                << " |-> Name:\t\t" << configuration.presence.name << "\n"
+                << " |-> Type" << ":\t\t";
+        switch (configuration.presence.activityType) {
+            case discord::ActivityType::Playing:
+                ostream << "Playing\n";
+                break;
+            case discord::ActivityType::Listening:
+                ostream << "Listening\n";
+                break;
+            case discord::ActivityType::Streaming:
+                ostream << "Streaming\n";
+                break;
+            case discord::ActivityType::Watching:
+                ostream << "Watching\n";
+                break;
+        }
+        ostream
+                << " |-> State:\t\t" << configuration.presence.state << "\n"
+                << " |-> Details:\t\t" << configuration.presence.details << "\n"
                 ;
+
+        if (configuration.presence.bigImage.enabled) {
+            ostream
+                    << " |-> Big Image:\t\tyes\n"
+                    << " | |-> Text:\t\t" << configuration.presence.bigImage.text << "\n"
+                    << " | `-> Image name:\t" << configuration.presence.bigImage.image << "\n"
+                    ;
+        } else {
+            ostream << " |-> Big Image:\t\tno\n";
+        }
+
+        if (configuration.presence.smallImage.enabled) {
+            ostream
+                    << " |-> Small Image:\tyes\n"
+                    << " | |-> Text:\t\t" << configuration.presence.smallImage.text << "\n"
+                    << " | `-> Image name:\t" << configuration.presence.smallImage.image << "\n"
+                    ;
+        } else {
+            ostream << " |-> Small Image:\t\tno\n";
+        }
+
+        if (configuration.presence.button1.enabled) {
+            ostream
+                    << " |-> Button 1:\t\tyes\n"
+                    << " | |-> Text:\t\t"<< configuration.presence.button1.text << "\n"
+                    << " | `-> Link:\t\t" << configuration.presence.button1.link << "\n"
+                    ;
+        } else {
+            ostream << " |-> Button 1:\t\tno\n";
+        }
+
+        if (configuration.presence.button2.enabled) {
+            ostream
+                    << " |-> Button 2:\t\tyes\n"
+                    << " | |-> Text:\t\t" << configuration.presence.button2.text << "\n"
+                    << " | `-> Link:\t\t" << configuration.presence.button2.link << "\n"
+                    ;
+        } else {
+            ostream << " |-> Button 2:\t\tno\n";
+        }
+
+        if (configuration.presence.timestamp.enabled) {
+            ostream
+                    << " `-> Timestamp:\t\tyes\n"
+                    << "   |-> Start:\t\t" << configuration.presence.timestamp.startTimestamp << "\n"
+                    << "   `-> End:\t\t" << configuration.presence.timestamp.currentTimestamp << "\n"
+                    ;
+        } else {
+            ostream << " `-> Timestamp:\tno\n";
+        }
+
+        return ostream
+                << "+---------------------------------+\n";
+    }
 }
 
 int main(const int argc, const char** argv) {

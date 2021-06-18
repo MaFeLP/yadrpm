@@ -48,6 +48,7 @@ struct Presence {
 struct Configuration {
     long clientID = 0L;
     bool colorEnabled = true;
+    std::string configFile{};
     static Configuration loadFromFile(const std::string&);
     Presence presence{};
 

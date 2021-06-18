@@ -23,6 +23,7 @@ Configuration Configuration::loadFromFile(const std::string& configFilePath) {
         out.presence.details = configMap["presence.details"];
         out.presence.state = configMap["presence.state"];
         out.presence.activityType = Presence::getActivityType(configMap["presence.type"]);
+        out.presence.timestamp.enabled = configMap["presence.timestamp"] == string{"true"};
         try {
             out.presence.bigImage.enabled = configMap["presence.bigImage.enabled"] == string{"true"};
             out.presence.smallImage.enabled = configMap["presence.smallImage.enabled"] == string{"true"};
@@ -54,6 +55,8 @@ Configuration Configuration::loadFromFile(const std::string& configFilePath) {
     } catch (std::exception& exception) {
         std::cerr << exception.what();
     }
+
+    out.configFile = configFilePath;
 
     return out;
 }
