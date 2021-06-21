@@ -1,33 +1,58 @@
 #!/usr/bin/env pwsh
 
+param (
+  [switch]$debug = $null,
+  [switch]$noDebug = $null,
+  [switch]$ssh = $null,
+  [switch]$http = $null
+)
+
 Write-Host "Thank you for using yadrpm by MaFeLP <mafelp@protonmail.ch>!" -ForegroundColor Green
 
-Write-Host ":: " -ForegroundColor Yellow -NoNewline
-$DEBUG_INPUT = Read-Host -Prompt ( "Do you want to see the output of the commands (default: n)? [y/n]: ")
-if ( $DEBUG_INPUT -ieq "y" ) {
-  $DEBUG=$true
-} elseif ( $DEBUG_INPUT -ieq "n" ) {
-  $DEBUG=$false
-} elseif ( $DEBUG_INPUT -ieq "" ) {
-  $DEBUG=$false
+# Checking if the no-debug command line option was given
+if ( -Not $debug -and -Not $noDebug ) {
+  Write-Host ":: " -ForegroundColor Yellow -NoNewline
+  $DEBUG_INPUT = Read-Host -Prompt ( "Do you want to see the output of the commands (default: n)? [y/n]")
+  if ( $DEBUG_INPUT -ieq "y" ) {
+    $DEBUG=$true
+  } elseif ( $DEBUG_INPUT -ieq "n" ) {
+    $DEBUG=$false
+  } elseif ( $DEBUG_INPUT -ieq "" ) {
+    $DEBUG=$false
+  } else {
+    Write-Host ":: " -ForegroundColor Red -NoNewline
+    Write-Host "Input could not be read. Please try again!"
+    exit
+  }
 } else {
-  Write-Host ":: " -ForegroundColor Red -NoNewline
-  Write-Host "Input could not be read. Please try again!"
-  exit
+  if ( $debug ) {
+    $DEBUG = $true
+  } else {
+    $DEBUG = $false
+  }
 }
 
-Write-Host ":: " -ForegroundColor Yellow -NoNewline
-$DEBUG_INPUT = Read-Host -Prompt ( "Do you have ssh set up with github (default: n)? [y/n]: ")
-if ( $SSH_INPUT -ieq "y" ) {
-  $SSH=$true
-} elseif ( $SSH_INPUT -ieq "n" ) {
-  $SSH=$false
-} elseif ( $SSH_INPUT -ieq "" ) {
-  $SSH=$false
+# Checking if the ssh/http command line args are given
+if ( -Not $ssh -and -Not $http ) {
+  Write-Host ":: " -ForegroundColor Yellow -NoNewline
+  $DEBUG_INPUT = Read-Host -Prompt ( "Do you have ssh set up with github (default: n)? [y/n]: ")
+  if ( $SSH_INPUT -ieq "y" ) {
+    $SSH=$true
+  } elseif ( $SSH_INPUT -ieq "n" ) {
+    $SSH=$false
+  } elseif ( $SSH_INPUT -ieq "" ) {
+    $SSH=$false
+  } else {
+    Write-Host ":: " -ForegroundColor Red -NoNewline
+    Write-Host "Input could not be read. Please try again!"
+    exit
+  }
 } else {
-  Write-Host ":: " -ForegroundColor Red -NoNewline
-  Write-Host "Input could not be read. Please try again!"
-  exit
+  if ( $ssh ) {
+    $SSH = $true
+  } else {
+    $SSH = $false
+  }
 }
 
 # Cloning source files...
@@ -144,11 +169,11 @@ if ( $DEBUG ) {
     exit
   }
 } else {
-  .\powershell-scripts\update-sdk.ps1 --debug --no-delete-sources
+  .\powershell-scripts\update-sdk.ps1 -debug -noDeleteSources
   if ( $? ) {
-    .\powershell-scripts\update-sdk-sources.ps1 --debug
+    .\powershell-scripts\update-sdk-sources.ps1 -debug
       if ( $? ) {
-        .\powershell-scripts\make.ps1 --debug
+        .\powershell-scripts\make.ps1 -debug
         if ( $? ) {
           Write-Host ":: " -ForegroundColor Green -NoNewline
           Write-Host "Update done!"

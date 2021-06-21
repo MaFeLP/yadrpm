@@ -1,20 +1,33 @@
 #!/usr/bin/env pwsh
 
+param (
+  [switch]$debug = $null,
+  [switch]$noDebug = $null
+)
+
 Write-Host "Thank you for using yadrpm by MaFeLP <mafelp@protonmail.ch>!" -ForegroundColor Green
 
 # Checking if the no-debug command line option was given
-Write-Host ":: " -ForegroundColor Yellow -NoNewline
-$DEBUG_INPUT = Read-Host -Prompt ( "Do you want to see the output of the commands (default: n)? [y/n]")
-if ( $DEBUG_INPUT -ieq "y" ) {
-  $DEBUG=$true
-} elseif ( $DEBUG_INPUT -ieq "n" ) {
-  $DEBUG=$false
-} elseif ( $DEBUG_INPUT -ieq "" ) {
-  $DEBUG=$false
+if ( -Not $debug -and -Not $noDebug ) {
+  Write-Host ":: " -ForegroundColor Yellow -NoNewline
+  $DEBUG_INPUT = Read-Host -Prompt ( "Do you want to see the output of the commands (default: n)? [y/n]")
+  if ( $DEBUG_INPUT -ieq "y" ) {
+    $DEBUG=$true
+  } elseif ( $DEBUG_INPUT -ieq "n" ) {
+    $DEBUG=$false
+  } elseif ( $DEBUG_INPUT -ieq "" ) {
+    $DEBUG=$false
+  } else {
+    Write-Host ":: " -ForegroundColor Red -NoNewline
+    Write-Host "Input could not be read. Please try again!"
+    exit
+  }
 } else {
-  Write-Host ":: " -ForegroundColor Red -NoNewline
-  Write-Host "Input could not be read. Please try again!"
-  exit
+  if ( $debug ) {
+    $DEBUG = $true
+  } else {
+    $DEBUG = $false
+  }
 }
 
 # Remove the old executable file.
