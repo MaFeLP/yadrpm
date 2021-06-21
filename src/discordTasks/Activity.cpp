@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include "Activity.hpp"
-#include "../discord/discord.h"
 
 Tasks::Activity::Activity(Configuration* configuration, discord::Core* core) : _configuration(configuration), _core(core) {
     _activity.SetName(_configuration->presence.name.c_str());

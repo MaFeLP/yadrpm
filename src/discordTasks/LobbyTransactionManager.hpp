@@ -11,7 +11,7 @@ namespace Tasks {
     struct LobbyTransactionManager {
         discord::LobbyTransaction _lobby{};
 
-        LobbyTransactionManager(discord::Core *core);
+        explicit LobbyTransactionManager(discord::Core *core);
 
     private:
         discord::Core* _core;

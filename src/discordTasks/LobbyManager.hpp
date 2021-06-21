@@ -10,7 +10,7 @@
 
 namespace Tasks {
     struct LobbyManager {
-        LobbyManager(discord::Core *core);
+        explicit LobbyManager(discord::Core *core);
 
     private:
         discord::Core *_core;
