@@ -13,7 +13,7 @@ if ( $DEBUG_INPUT -ieq "y" ) {
 } else {
   Write-Host ":: " -ForegroundColor Red -NoNewline
   Write-Host "Input could not be read. Please try again!"
-  Exit-PSSession
+  exit
 }
 
 Write-Host ":: " -ForegroundColor Yellow -NoNewline
@@ -27,7 +27,7 @@ if ( $SSH_INPUT -ieq "y" ) {
 } else {
   Write-Host ":: " -ForegroundColor Red -NoNewline
   Write-Host "Input could not be read. Please try again!"
-  Exit-PSSession
+  exit
 }
 
 # Cloning source files...
@@ -46,7 +46,7 @@ if ( $DEBUG ) {
 \`-> Check with 'ping google.com'
 - Do you have git's latest version installed?
 \`-> Check with 'git --version'" -ForegroundColor Red
-      Exit-PSSession
+      exit
     }
    } else {
     Write-Host ":: " -ForegroundColor Cyan -NoNewline
@@ -65,7 +65,7 @@ if ( $DEBUG ) {
 \`-> Check with 'ping google.com'
 - Do you have git's latest version installed?
 \`-> Check with 'git --version'" -ForegroundColor Red
-        Exit-PSSession
+        exit
       } 
     }
   }
@@ -84,7 +84,7 @@ if ( $DEBUG ) {
 \`-> Check with 'ping google.com'
 - Do you have git's latest version installed?
 \`-> Check with 'git --version'" -ForegroundColor Red
-      Exit-PSSession
+      exit
     }
    } else {
     Write-Host ":: " -ForegroundColor Cyan -NoNewline
@@ -103,7 +103,7 @@ if ( $DEBUG ) {
 \`-> Check with 'ping google.com'
 - Do you have git's latest version installed?
 \`-> Check with 'git --version'" -ForegroundColor Red
-        Exit-PSSession
+        exit
       } 
     }
   }
@@ -114,7 +114,7 @@ Set-Location -Path .\yadrpm
 if ( -Not $? ) {
   Write-Host ":: " -ForegroundColor Red -NoNewline
   Write-Host "Could not change the directory... Exiting!"
-  Exit-PSSession
+  exit
 }
 
 # Download discords Game SDK
@@ -127,21 +127,21 @@ if ( $DEBUG ) {
         if ( $? ) {
           Write-Host ":: " -ForegroundColor Green -NoNewline
           Write-Host "Update done!"
-          Exit-PSSession
+          exit
         } else {
           Write-Host ":: " -ForegroundColor Red -NoNewline
           Write-Host "Something went wrong, in the making process!"
-          Exit-PSSession
+          exit
         }
      } else {
        Write-Host ":: " -ForegroundColor Red -NoNewline
        Write-Host "Something went wrong, in the game-sdk-sources-updating process!"
-       Exit-PSSession
+       exit
      }
   } else {
     Write-Host ":: " -ForegroundColor Red -NoNewline
     Write-Host "Something went wrong, in the game SDK updating process!"
-    Exit-PSSession
+    exit
   }
 } else {
   .\powershell-scripts\update-sdk.ps1 --debug --no-delete-sources
@@ -152,20 +152,20 @@ if ( $DEBUG ) {
         if ( $? ) {
           Write-Host ":: " -ForegroundColor Green -NoNewline
           Write-Host "Update done!"
-          Exit-PSSession
+          exit
         } else {
           Write-Host ":: " -ForegroundColor Red -NoNewline
           Write-Host "Something went wrong, in the making process!"
-          Exit-PSSession
+          exit
         }
      } else {
        Write-Host ":: " -ForegroundColor Red -NoNewline
        Write-Host "Something went wrong, in the game-sdk-sources-updating process!"
-       Exit-PSSession
+       exit
      }
   } else {
     Write-Host ":: " -ForegroundColor Red -NoNewline
     Write-Host "Something went wrong, in the game SDK updating process!"
-    Exit-PSSession
+    exit
   }
 }
