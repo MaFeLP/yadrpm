@@ -35,6 +35,9 @@ yadrpm
 # CLion working directory
 .idea/
 
+# Visual Studio Working Directory
+.vs/
+
 # CMake output directory
 cmake-build-debug/
 
