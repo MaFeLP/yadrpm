@@ -144,11 +144,11 @@ if ( -Not $? ) {
 
 # Download discords Game SDK
 if ( $DEBUG ) {
-  .\powershell-scripts\update-sdk.ps1 --debug --no-delete-sources
+  .\scripts\powershell\update-sdk.ps1 --debug --no-delete-sources
   if ( $? ) {
-    .\powershell-scripts\update-sdk-sources.ps1 --debug
+    .\scripts\powershell\update-sdk-sources.ps1 --debug
       if ( $? ) {
-        .\powershell-scripts\make.ps1 --debug
+        .\scripts\powershell\make.ps1 --debug
         if ( $? ) {
           Write-Host ":: " -ForegroundColor Green -NoNewline
           Write-Host "Update done!"
@@ -169,11 +169,11 @@ if ( $DEBUG ) {
     exit
   }
 } else {
-  .\powershell-scripts\update-sdk.ps1 -debug -noDeleteSources
+  .\scripts\powershell\update-sdk.ps1 -debug -noDeleteSources
   if ( $? ) {
-    .\powershell-scripts\update-sdk-sources.ps1 -debug
+    .\scripts\powershell\update-sdk-sources.ps1 -debug
       if ( $? ) {
-        .\powershell-scripts\make.ps1 -debug
+        .\scripts\powershell\make.ps1 -debug
         if ( $? ) {
           Write-Host ":: " -ForegroundColor Green -NoNewline
           Write-Host "Update done!"

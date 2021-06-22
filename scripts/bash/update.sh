@@ -71,9 +71,9 @@ fi
 
 # Download discords Game SDK
 if [[ $DEBUG == true ]];then
-  if bash ./bash-scripts/update-sdk.sh --debug --no-delete-sources;then
-    if bash ./bash-scripts/update-sdk-sources.sh --debug;then
-      if bash ./bash-scripts/make.sh --debug;then
+  if bash ./scripts/bash/update-sdk.sh --debug --no-delete-sources;then
+    if bash ./scripts/bash/update-sdk-sources.sh --debug;then
+      if bash ./scripts/bash/make.sh --debug;then
         echo -e "$FINISHED Update done!$RESET"
         exit 0
       else
@@ -89,9 +89,9 @@ if [[ $DEBUG == true ]];then
     exit 1
   fi
 else
-  if bash ./bash-scripts/update-sdk.sh --no-debug --no-delete-sources;then
-    if bash ./bash-scripts/update-sdk-sources.sh --no-debug;then
-      if bash ./bash-scripts/make.sh --no-debug;then
+  if bash ./scripts/bash/update-sdk.sh --no-debug --no-delete-sources;then
+    if bash ./scripts/bash/update-sdk-sources.sh --no-debug;then
+      if bash ./scripts/bash/make.sh --no-debug;then
         echo -e "$FINISHED Update done!"
         exit 0
       else
