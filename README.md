@@ -3,6 +3,11 @@ A discord rich presence creator based on discord's game SDK.
 
 ## Building
 ### Dependencies
+#### Windows
+ - [git](https://git-scm.com/)
+ - [cmake](https://cmake.org/)
+ - [Visual Studio](https://)
+#### Linux & MacOS
  - [curl](https://curl.se/)
  - [git](https://git-scm.com/)
  - [cmake](https://cmake.org/)
