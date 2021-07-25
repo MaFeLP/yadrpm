@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # The SDK version to download
-SDK_VERSION="2.5.6"
+SDK_VERSION="3.1.0"
 
 # Color definitions with Escape-Sequences
 ESCAPE="\033[0;"

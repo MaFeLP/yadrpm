@@ -3,7 +3,7 @@
 param (
   [switch]$debug = $null,
   [switch]$noDebug = $null,
-  [string]$sdk_version = "2.5.6",
+  [string]$sdk_version = "3.1.0",
   [switch]$NoDelteSources = $false
 )
 
