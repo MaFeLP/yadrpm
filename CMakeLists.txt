@@ -13,6 +13,6 @@ add_executable(yadrpm
         ${DISCORD_TASKS}
         src/Configuration.cpp
         src/Configuration.hpp
-        src/main.cpp)
+        src/main.cpp src/DiscordChecker.cpp src/DiscordChecker.h)
 
 target_link_libraries(yadrpm discord_game_sdk)

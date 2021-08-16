@@ -8,6 +8,7 @@
 
 #include "discord/discord.h"
 #include "discordTasks/tasks.hpp"
+#include "DiscordChecker.h"
 #include "Configuration.hpp"
 #include "Colors.hpp"
 
@@ -357,6 +358,10 @@ int main(const int argc, const char** argv) {
                 return 1;
             }
         }
+    }
+
+    if (!discord::isRunning()) {
+        return 1;
     }
 
     cout << "Initialising the discord game SDK...\n"
