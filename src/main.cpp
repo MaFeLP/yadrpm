@@ -4,7 +4,10 @@
 #include <cstdlib>
 #include <iostream>
 #include <thread>
-#include <vector>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #include "discord/discord.h"
 #include "discordTasks/tasks.hpp"
@@ -410,7 +413,12 @@ int main(const int argc, const char** argv) {
     do {
         state.core->RunCallbacks();
 
+#ifdef _WIN32
+        Sleep(16);
+#else
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
+#endif
+
     } while (!interrupted);
 
     cout << "Thanks for using yadrpm!\n"
