@@ -361,6 +361,7 @@ int main(const int argc, const char** argv) {
     }
 
     if (!discord::isRunning()) {
+        cerr << "Discord is not running!";
         return 1;
     }
 
