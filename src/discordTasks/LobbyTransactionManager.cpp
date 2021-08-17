@@ -15,6 +15,7 @@ Tasks::LobbyTransactionManager::LobbyTransactionManager(discord::Core *core) : _
             _lobby, [&](discord::Result result, discord::Lobby const& lobby) {
                 if (result == discord::Result::Ok) {
                     std::cout << "Created _lobby with secret " << lobby.GetSecret() << "\n";
+#ifndef _WIN32
                     std::array<uint8_t, 234> data{};
                     _core->LobbyManager().SendLobbyMessage(
                             lobby.GetId(),
@@ -23,6 +24,7 @@ Tasks::LobbyTransactionManager::LobbyTransactionManager(discord::Core *core) : _
                             [](discord::Result result) {
                                 std::cout << "Sent message. Result: " << static_cast<int>(result) << "\n";
                             });
+#endif
                 }
                 else {
                     std::cout << "Failed creating _lobby. (err " << static_cast<int>(result) << ")\n";
