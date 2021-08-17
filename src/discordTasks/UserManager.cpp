@@ -40,6 +40,7 @@ Tasks::UserManager::UserManager(discord::Core *core, discord::User* user) : _cor
                         uint8_t* d = data.data();
                         _core->ImageManager().GetData(handle, d, data.size());
 
+/*
 #if defined(_WIN32)
                         auto fileSize =
                     data.size() + sizeof(BitmapImageHeader) + sizeof(BitmapFileHeader);
@@ -65,6 +66,7 @@ Tasks::UserManager::UserManager(discord::Core *core, discord::User* user) : _cor
                   fflush(fp);
                   fclose(fp);
 #endif
+*/
                     }
                     else {
                         std::cout << "Failed fetching avatar. (err " << static_cast<int>(res) << ")\n";
