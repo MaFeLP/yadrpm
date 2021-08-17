@@ -11,11 +11,11 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
-#elif _WINDOWS
+#elif _WIN32
 #include <windows.h>
-#include <stdio.h>
 #include <tchar.h>
-#include <psapi.h>
+#include <iostream>
+#include <tlhelp32.h>
 #endif
 
 #ifdef __linux__
@@ -67,81 +67,53 @@ int discord::getProcessId()
     return pid;
 }
 
-#elif _WINDOWS
-// To ensure correct resolution of symbols, add Psapi.lib to TARGETLIBS
-// and compile with -DPSAPI_VERSION=1
-
-TCHAR discord::getProcessName( DWORD processID )
+#elif _WIN32
+// Source: https://stackoverflow.com/questions/13179410/check-whether-one-specific-process-is-running-on-windows-with-c
+DWORD FindProcessId(char* processName)
 {
-    TCHAR szProcessName[MAX_PATH] = TEXT("<unknown>");
+    // strip path
 
-    // Get a handle to the process.
+    char* p = strrchr(processName, '\\');
+    if(p)
+        processName = p+1;
 
-    HANDLE hProcess = OpenProcess( PROCESS_QUERY_INFORMATION |
-            PROCESS_VM_READ,
-            FALSE, processID );
+    PROCESSENTRY32 processInfo;
+    processInfo.dwSize = sizeof(processInfo);
 
-    // Get the process name.
+    HANDLE processesSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if ( processesSnapshot == INVALID_HANDLE_VALUE )
+        return 0;
 
-    if (NULL != hProcess )
+    Process32First(processesSnapshot, &processInfo);
+    if ( !strcmp(processName, processInfo.szExeFile) )
     {
-        HMODULE hMod;
-        DWORD cbNeeded;
+        CloseHandle(processesSnapshot);
+        std::cout << "Found discord process! #1\n Process ID: " << processInfo.th32ProcessID << "\n";
+        return processInfo.th32ProcessID;
+    }
 
-        if ( EnumProcessModules( hProcess, &hMod, sizeof(hMod),
-                                 &cbNeeded) )
+    while ( Process32Next(processesSnapshot, &processInfo) )
+    {
+        if ( !strcmp(processName, processInfo.szExeFile) )
         {
-            GetModuleBaseName( hProcess, hMod, szProcessName,
-                               sizeof(szProcessName)/sizeof(TCHAR) );
+            CloseHandle(processesSnapshot);
+            std::cout << "Found discord process! #2\n Process ID: " << processInfo.th32ProcessID << "\n";
+            return processInfo.th32ProcessID;
         }
     }
 
-    // Print the process name and identifier.
-    //_tprintf( TEXT("%s  (PID: %u)\n"), szProcessName, processID );
-
-    // Release the handle to the process.
-
-    CloseHandle( hProcess );
-
-    return szProcessName;
+    CloseHandle(processesSnapshot);
+    std::cerr << "Discord process instance not found!\n";
+    return 0;
 }
 #endif
 
 bool discord::isRunning() {
 #ifdef __linux__
     return discord::getProcessId() > 0;
-#elif _WINDOWS
-    // Get the list of process identifiers.
-
-    DWORD aProcesses[1024], cbNeeded, cProcesses;
-    unsigned int i;
-
-    if ( !EnumProcesses( aProcesses, sizeof(aProcesses), &cbNeeded ) )
-    {
-        return 1;
-    }
-
-
-    // Calculate how many process identifiers were returned.
-
-    cProcesses = cbNeeded / sizeof(DWORD);
-
-    // Print the name and process identifier for each process.
-
-    for ( i = 0; i < cProcesses; i++ )
-    {
-        if( aProcesses[i] != 0 )
-        {
-            PrintProcessNameAndID( aProcesses[i] );
-
-            return (if (aProcesses[i].c_str() == string {"Discord.exe"}.c_Str()) ? true : false);
-        }
-    }
-
-    return 0;
-    if (discord::getAllProcesses().contains("Discord.exe"))
-        return true;
-    return false;
+#elif _WIN32
+    char name[] = "Discord.exe";
+    return FindProcessId(name) > 0;
 #else
     return true;
 #endif

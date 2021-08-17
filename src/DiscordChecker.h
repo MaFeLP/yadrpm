@@ -9,8 +9,8 @@
 namespace discord {
 #ifdef __linux__
     int getProcessId();
-#elif _WINDOWS
-    TCHAR getProcessName(DWORD);
+#elif _WIN32
+    char getProcessName(unsigned long processID);
 #endif
 
     bool isRunning();
